@@ -1,0 +1,19 @@
+Welcome to Connectster.
+
+To install Connectster you need to execute the ServerConsole with the --install switch:
+
+    java connectster.server.ServerConsole --install C:/<somepath>/install.properties
+    
+Once this is down, restart without the --install switch to run thereafter:
+
+    java connectster.server.ServerConsole
+    
+All properties are stored in the AdapterProperty table.
+        
+For security purposes, unit tests have all been removed, they need to be made configurable.
+
+Hibernate configuration is looked for from starting folder, it should reside in:
+
+    ./configuration/Hibernate.hbm.xml
+    
+    

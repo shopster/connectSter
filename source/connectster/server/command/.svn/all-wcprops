@@ -1,0 +1,155 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/492/Connectster/trunk/source/connectster/server/command
+END
+GetOutOfDateProductsCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/514/Connectster/trunk/source/connectster/server/command/GetOutOfDateProductsCommand.java
+END
+SetUserPropertyCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/483/Connectster/trunk/source/connectster/server/command/SetUserPropertyCommand.java
+END
+GetProductMappingBySourceIdCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/502/Connectster/trunk/source/connectster/server/command/GetProductMappingBySourceIdCommand.java
+END
+BuildOrderMappingsCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/492/Connectster/trunk/source/connectster/server/command/BuildOrderMappingsCommand.java
+END
+UpdateProductCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/508/Connectster/trunk/source/connectster/server/command/UpdateProductCommand.java
+END
+GetMappedProductCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/524/Connectster/trunk/source/connectster/server/command/GetMappedProductCommand.java
+END
+GetPendingOrdersCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/492/Connectster/trunk/source/connectster/server/command/GetPendingOrdersCommand.java
+END
+MapUserCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/455/Connectster/trunk/source/connectster/server/command/MapUserCommand.java
+END
+UpdateProductMappingCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/514/Connectster/trunk/source/connectster/server/command/UpdateProductMappingCommand.java
+END
+UpdateOrderMappingCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/514/Connectster/trunk/source/connectster/server/command/UpdateOrderMappingCommand.java
+END
+GetOrderByIdCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/492/Connectster/trunk/source/connectster/server/command/GetOrderByIdCommand.java
+END
+RemoveProductCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/455/Connectster/trunk/source/connectster/server/command/RemoveProductCommand.java
+END
+StoreDataCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/469/Connectster/trunk/source/connectster/server/command/StoreDataCommand.java
+END
+GetProductBySourceCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/476/Connectster/trunk/source/connectster/server/command/GetProductBySourceCommand.java
+END
+UnmapProductCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/455/Connectster/trunk/source/connectster/server/command/UnmapProductCommand.java
+END
+AddOrderCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/508/Connectster/trunk/source/connectster/server/command/AddOrderCommand.java
+END
+AddProductCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/508/Connectster/trunk/source/connectster/server/command/AddProductCommand.java
+END
+RegisterUserCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/483/Connectster/trunk/source/connectster/server/command/RegisterUserCommand.java
+END
+RemoveDataCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/455/Connectster/trunk/source/connectster/server/command/RemoveDataCommand.java
+END
+GetAdapterUsersCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/476/Connectster/trunk/source/connectster/server/command/GetAdapterUsersCommand.java
+END
+LoadDataCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/455/Connectster/trunk/source/connectster/server/command/LoadDataCommand.java
+END
+MapProductCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/482/Connectster/trunk/source/connectster/server/command/MapProductCommand.java
+END
+GetUserByIdCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/492/Connectster/trunk/source/connectster/server/command/GetUserByIdCommand.java
+END
+GetMappedUserCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/462/Connectster/trunk/source/connectster/server/command/GetMappedUserCommand.java
+END
+IncrementProductMappingRetryCountCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/514/Connectster/trunk/source/connectster/server/command/IncrementProductMappingRetryCountCommand.java
+END
