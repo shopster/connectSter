@@ -1,0 +1,18 @@
+NOTES:
+- Currently the ShopsterMonitor walks over a list of all its adapter users and for each one does a remote call to check
+  for any changed products, this might be a bit costly as the userbase increases in size.
+    - Either: A) Get an event model or webhook going from shopster side to push changes back to us
+           or: B) Do a full query in a user-agnostic way and deal with mappings on connectster end to determine which user, etc...
+
+- If a product is deleted or modified on the Shopify side, then it is not re-created by connectster,
+    - Do we want it to be?
+  
+TEST FOR:
+ - we should never allow a situation where a productId is mapped P1 -> M1 and then mapped M1 -> P1, only one productMapping should exist?
+
+// 2. Last mile for orders into shopster
+// 4. Fix http error
+// 5. Handle paging for loading products on both shopster and shopify
+// 6. Need to have queries return for the given date cutoff - both shopster and shopify have this issue
+// 7. Put property files in place to set parameters on monitors and stuff currently hc'd in unit test (EndToEnd)
+
