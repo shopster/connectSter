@@ -23,12 +23,14 @@ implements ICommand<IProductMapping>
         IResponse<IProductMapping> response;
         long sourceAdapterId = ( Long )parameters.get( ICommand.PARAMETER_ADAPTER_ID );
         long sourceProductId = ( Long )parameters.get( ICommand.PARAMETER_PRODUCT_ID );
+        String targetUserId = ( String )parameters.get( ICommand.PARAMETER_TARGET_USER_ID );
 
         try
         {
             Criteria mappingCritera = session.createCriteria( ProductMapping.class );
             mappingCritera.add( Restrictions.eq( "destinationAdapterId", sourceAdapterId  ) );
             mappingCritera.add( Restrictions.eq( "productId", sourceProductId ) );
+            mappingCritera.add( Restrictions.eq( "destinationUserId", targetUserId ) );
 
             // locate a mapping for this product, if it exists
             IProductMapping productMapping = ( ProductMapping )mappingCritera.uniqueResult( );
@@ -45,7 +47,7 @@ implements ICommand<IProductMapping>
                 }
 
                 productMapping = new ProductMappingDTO( product.getAdapterDetails( ).getId( ), product.getSourceAdapterId( ),
-                    product.getSourceId( ), product.getLastUpdate( ) ); 
+                    product.getSourceId( ), targetUserId, product.getLastUpdate( ) ); 
             }
 
             response = new Response<IProductMapping>( productMapping, IResponse.Status.Successful, "Found product mapping: " +

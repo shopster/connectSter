@@ -24,7 +24,7 @@ public interface IMasterProxy
 {
     public IResponse<IProductMapping> proxyGetProductMappingBySourceId( AdapterConnection slaveAdapter, String sourceId );
     public IResponse<IProduct> proxyGetProductBySource( AdapterConnection slaveAdapter, long ownerId, String sourceProductId );
-    public IResponse<IProductMapping> proxyGetProductMapping( AdapterConnection slaveAdapter, long adapterId, long productId );
+    public IResponse<IProductMapping> proxyGetProductMapping( AdapterConnection slaveAdapter, long adapterId, long productId, String targetUserId );
     public IResponse<List<IUser>> proxyGetAdapterUsers( AdapterConnection slaveAdapter );
     public IResponse<IProduct> proxyAddProduct( AdapterConnection slaveAdapter, IProduct product );
     public IResponse<IProduct> proxyUpdateProduct( AdapterConnection slaveAdapter, long productId, IProduct product );

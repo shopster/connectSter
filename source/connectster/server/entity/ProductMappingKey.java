@@ -22,6 +22,7 @@ implements Serializable
     private long productId;
     private long destinationAdapterId;
     private String destinationId;
+    private String destinationUserId;
 
     public long getProductId()
     {
@@ -68,5 +69,15 @@ implements Serializable
     public int hashCode( )
     {
         return ( int )productId;
+    }
+
+    public String getDestinationUserId()
+    {
+        return destinationUserId;
+    }
+
+    public void setDestinationUserId( String destinationUserId )
+    {
+        this.destinationUserId = destinationUserId;
     }
 }

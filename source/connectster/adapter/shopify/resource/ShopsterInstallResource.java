@@ -63,6 +63,8 @@ extends ServerResource
                 }
                 else
                 {
+                    // todo : check if a webhook already exists
+
                     // build a webhook object for this request, it will be externalized as an xml request to shopify
                     ShopifyWebhook webhook = new ShopifyWebhook( );
                     webhook.setAddress( baseCallbackUri.getValue( ) + ShopifyApplication.WEBHOOK_METHOD + "?id=" + user.getId( ) );
@@ -70,7 +72,7 @@ extends ServerResource
 
                     try
                     {
-                        ShopifyAdapter.getInstance( ).invokeRestCall( user, Method.POST, ShopifyAdapter.METHOD_ADD_WEBHOOK,
+                        ShopifyAdapter.getInstance( ).invokeRestCall( user.getName( ), Method.POST, ShopifyAdapter.METHOD_ADD_WEBHOOK,
                             ShopifyEntityHelper.toXml( webhook ) );
                         log.info( "Webhook installed for: " + user.getName( ) );
                     }

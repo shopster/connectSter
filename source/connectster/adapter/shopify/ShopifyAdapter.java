@@ -38,7 +38,6 @@ import java.util.logging.Logger;
  * limitations under the License.
  */
 public class ShopifyAdapter
-extends TestableAdapter
 implements IAdapter
 {
     public static String AuthenticationCategory = "authorization";
@@ -122,7 +121,7 @@ implements IAdapter
     }
 
     @Override
-    public List<IProduct> remoteGetProducts( IUser user, Date lastUpdated )
+    public List<IProduct> remoteGetProducts( IUser user, String targetUserId, Date lastUpdated )
     throws AdapterException
     {
         try
@@ -138,12 +137,12 @@ implements IAdapter
             }
 
             ArrayList<IProduct> results = new ArrayList<IProduct>( );
-            String xml = invokeRestCall( user, Method.GET, METHOD_PRODUCTS, null, parameters );
+            String xml = invokeRestCall( targetUserId, Method.GET, METHOD_PRODUCTS, null, parameters );
 
             ShopifyProductGroup products = ShopifyEntityHelper.getProducts( xml );
             for( ShopifyProduct product : products.getProducts( ) )
             {
-                results.add( new ProductDTO( connection.getAdapterId( ), user.getName( ), String.valueOf( product.getId( ) ),
+                results.add( new ProductDTO( connection.getAdapterId( ), targetUserId, String.valueOf( product.getId( ) ),
                     product.getTitle( ) ) );
             }
 
@@ -156,7 +155,7 @@ implements IAdapter
     }
 
     @Override
-    public IResponse<IProductMapping> remoteAddProduct( IProduct product )
+    public IResponse<IProductMapping> remoteAddProduct( String targetUserId, IProduct product )
     {
         IResponse<IProductMapping> result;
 
@@ -170,14 +169,14 @@ implements IAdapter
             entity = entity.replace( "<variants>", "<variants type=\"array\">" );
 
             // make remote call to shopify to add this entity
-            String xml = invokeRestCall( product.getOwner( ), Method.POST, METHOD_PRODUCTS, entity );
+            String xml = invokeRestCall( targetUserId, Method.POST, METHOD_PRODUCTS, entity );
 
             // convert the shopify product back so that we have newly assigned id
             ShopifyProduct resultProduct = ShopifyEntityHelper.toShopifyProduct( xml );
 
             // extract shopify id and use to map this product to shopify
            ProductMappingDTO productMapping = new ProductMappingDTO( connection.getAdapterId( ), product.getId( ),
-               String.valueOf( resultProduct.getId( ) ), product.getLastUpdate( ) );
+               String.valueOf( resultProduct.getId( ) ), product.getSourceUserId( ), product.getLastUpdate( ) );
 
             result = new ResponseDTO<IProductMapping>( productMapping, IResponse.Status.Successful, "Remotely added product: " +
                 resultProduct.getId( ) );
@@ -208,14 +207,14 @@ implements IAdapter
             
             // make remote call to shopify to update this entity
             String normalizedMethod = METHOD_UPDATE_PRODUCT.replace( "{id}", mapping.getTargetProductId( ) );
-            invokeRestCall( product.getOwner( ), Method.PUT, normalizedMethod, entity );
+            invokeRestCall( mapping.getTargetUserId( ), Method.PUT, normalizedMethod, entity );
 
             // make a remote call to shopify to update variant entity
             normalizedMethod = METHOD_UPDATE_VARIANT.replace( "{id}", mapping.getTargetProductId( ) );
             for( ShopifyVariant variant : variants )
             {
                 variant.setId( Integer.parseInt( shopifyProduct.getId( ) ) );
-                invokeRestCall( product.getOwner( ), Method.PUT, normalizedMethod, ShopifyEntityHelper.toXml( variant ) );
+                invokeRestCall( mapping.getTargetUserId( ), Method.PUT, normalizedMethod, ShopifyEntityHelper.toXml( variant ) );
             }
 
             result = new ResponseDTO<IProduct>( product, IResponse.Status.Successful, "Successfully updated remote product: " +
@@ -253,20 +252,20 @@ implements IAdapter
         return properties;
     }
 
-    public String invokeRestCall( IUser user, Method httpMethod, String webMethod, String entity )
+    public String invokeRestCall( String targetUserId, Method httpMethod, String webMethod, String entity )
     throws ShopifyRestException
     {
-        return invokeRestCall( user, httpMethod, webMethod, entity, null );
+        return invokeRestCall( targetUserId, httpMethod, webMethod, entity, null );
     }
 
-    public String invokeRestCall( IUser user, Method httpMethod, String webMethod, String entity, Map<String,String> parameters )
+    public String invokeRestCall( String targetUserId, Method httpMethod, String webMethod, String entity, Map<String,String> parameters )
     throws ShopifyRestException
     {
         // get the previously stored ShopifyShopAuthentication data saved to connectster as an AdapterData piece.
-        IResponse<IAdapterData> dataResponse = connection.loadData( AuthenticationCategory, user.getName( ) );
+        IResponse<IAdapterData> dataResponse = connection.loadData( AuthenticationCategory, targetUserId );
         if( dataResponse.getStatus( ) == IResponse.Status.Failure )
         {
-            throw new ShopifyRestException( "Unable to find adapter data for: [" + AuthenticationCategory + "/" + user.getName( ) +
+            throw new ShopifyRestException( "Unable to find adapter data for: [" + AuthenticationCategory + "/" + targetUserId +
                 "], returning empty list of product." );
         }
         IAdapterData data = dataResponse.getSource( );

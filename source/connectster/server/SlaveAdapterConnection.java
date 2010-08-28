@@ -40,9 +40,9 @@ extends AdapterConnection
     }
 
     @Override
-    public IResponse<IProductMapping> getProductMapping( long adapterId, long productId )
+    public IResponse<IProductMapping> getProductMapping( long sourceAdapterId, long productId, String targetUserId )
     {
-        return master.proxyGetProductMapping( this, adapterId, productId );
+        return master.proxyGetProductMapping( this, sourceAdapterId, productId, targetUserId );
     }
 
     @Override

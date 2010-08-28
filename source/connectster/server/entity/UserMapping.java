@@ -18,8 +18,8 @@ import javax.persistence.*;
  */
 
 @Entity
-@IdClass(UserMappingKey.class)
-@Table(uniqueConstraints = { @UniqueConstraint( columnNames={ "sourceUserId", "adapterId" } ) } )
+@IdClass( UserMappingKey.class )
+@Table( uniqueConstraints = { @UniqueConstraint( columnNames={ "sourceUserId", "userId" } ) } )
 public class UserMapping
 implements IUserMapping
 {
@@ -34,7 +34,7 @@ implements IUserMapping
     @Id
     @AttributeOverrides({
         @AttributeOverride(name = "userId", column = @Column(name="userId")),
-        @AttributeOverride(name = "adapterId", column = @Column(name="adapterId"))
+        @AttributeOverride(name = "sourceUserId", column = @Column(name="sourceUserId"))
     })
 
     private long userId;

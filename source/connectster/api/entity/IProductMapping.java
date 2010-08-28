@@ -23,4 +23,5 @@ extends Comparable<IProductMapping>
     public long getTargetAdapterId( );
     public Date getUpdatedOn( );
     public int getRetryCount( );
+    public String getTargetUserId( );
 }

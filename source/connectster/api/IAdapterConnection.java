@@ -31,7 +31,7 @@ public interface IAdapterConnection
     public long getAdapterId( );
     public IResponse<IProductMapping> getProductMappingBySourceId( String sourceId );
     public IResponse<IProduct> getProductBySource( long ownerId, String sourceProductId );
-    public IResponse<IProductMapping> getProductMapping( long sourceAdapterId, long productId );
+    public IResponse<IProductMapping> getProductMapping( long sourceAdapterId, long productId, String targetUserId );
     public IResponse<List<IUser>> getAdapterUsers( );
     public IResponse<IProduct> addProduct( IProduct product );
     public IResponse<IProduct> updateProduct( long productId, IProduct product );

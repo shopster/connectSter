@@ -107,7 +107,7 @@ implements IAdapter
     }
 
     @Override
-    public List<IProduct> remoteGetProducts( IUser user, Date lastUpdated )
+    public List<IProduct> remoteGetProducts( IUser user, String targetUserId, Date lastUpdated )
     throws AdapterException
     {
         try
@@ -202,7 +202,7 @@ implements IAdapter
      * @return The new mapping for this product.
      */
     @Override
-    public IResponse<IProductMapping> remoteAddProduct( IProduct product )
+    public IResponse<IProductMapping> remoteAddProduct( String targetUserId, IProduct product )
     {
         return new ResponseDTO<IProductMapping>( null, IResponse.Status.Failure, "Not Implemented" );
     }
@@ -249,8 +249,11 @@ implements IAdapter
             OrderCartItemType item = factory.createOrderCartItemType( );
             item.setQuantity( factory.createOrderCartItemTypeQuantity( orderItem.getQuantity( ) ) );
 
+            // todo : retest
+
             // get mapping for target product id on shopster side
-            IResponse<IProductMapping> mappingResponse = connection.getProductMapping( connection.getAdapterId( ), orderItem.getProduct().getId( ) );
+            IResponse<IProductMapping> mappingResponse = connection.getProductMapping( connection.getAdapterId( ),
+                orderItem.getProduct().getId( ), order.getSourceUserId( ) );
             if( mappingResponse.getStatus( ) == IResponse.Status.Failure )
             {
                 return new ResponseDTO<String>( null, IResponse.Status.Failure, "Unable to push mapping to shopster, cancelling order: " +

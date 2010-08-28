@@ -20,7 +20,7 @@ public class UserMappingKey
 implements Serializable
 {
     private long userId;
-    private long adapterId;
+    private String sourceUserId;
 
     public long getUserId()
     {
@@ -32,14 +32,14 @@ implements Serializable
         this.userId = userId;
     }
 
-    public long getAdapterId()
+    public String getSourceUserId()
     {
-        return adapterId;
+        return sourceUserId;
     }
 
-    public void setAdapterId( long adapterId )
+    public void setSourceUserId( String sourceUserId )
     {
-        this.adapterId = adapterId;
+        this.sourceUserId = sourceUserId;
     }
 
     public boolean equals( Object rhs )
@@ -50,7 +50,7 @@ implements Serializable
         }
 
         UserMappingKey rhsUserKey = ( UserMappingKey )rhs;
-        return rhsUserKey.getAdapterId( ) == adapterId && rhsUserKey.getUserId( ) == userId;
+        return rhsUserKey.getSourceUserId( ).equals( sourceUserId ) && rhsUserKey.getUserId( ) == userId;
     }
 
     public int hashCode( )

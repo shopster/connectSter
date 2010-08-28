@@ -50,10 +50,10 @@ implements IMasterProxy
     }
 
     @Override
-    public IResponse<IProductMapping> proxyGetProductMapping( AdapterConnection slaveAdapter, long adapterId, long productId )
+    public IResponse<IProductMapping> proxyGetProductMapping( AdapterConnection slaveAdapter, long adapterId, long productId, String targetUserId )
     {
         return EntityHelper.execute( new GetMappedProductCommand( ), EntityHelper.listToMap( ICommand.PARAMETER_ADAPTER_ID,
-            adapterId, ICommand.PARAMETER_PRODUCT_ID, productId ) );
+            adapterId, ICommand.PARAMETER_PRODUCT_ID, productId, ICommand.PARAMETER_TARGET_USER_ID, targetUserId ) );
     }
 
     @Override
@@ -167,10 +167,10 @@ implements IMasterProxy
     }
 
     @Override
-    public IResponse<IProductMapping> getProductMapping( long adapterId, long productId )
+    public IResponse<IProductMapping> getProductMapping( long adapterId, long productId, String targetUserId )
     {
         return EntityHelper.execute( new GetMappedProductCommand( ), EntityHelper.listToMap( ICommand.PARAMETER_ADAPTER_ID,
-            adapterId, ICommand.PARAMETER_PRODUCT_ID, productId ) );
+            adapterId, ICommand.PARAMETER_PRODUCT_ID, productId, ICommand.PARAMETER_TARGET_USER_ID, targetUserId ) );
     }
 
     @Override

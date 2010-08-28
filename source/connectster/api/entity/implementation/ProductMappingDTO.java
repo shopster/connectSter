@@ -26,6 +26,7 @@ implements IProductMapping, Serializable
     private String targetProductId;
     private Date updatedOn;
     private int retryCount;
+    private String targetUserId;
 
     public ProductMappingDTO( IProductMapping mapping )
     {
@@ -34,14 +35,16 @@ implements IProductMapping, Serializable
         this.setTargetProductId( mapping.getTargetProductId( ) );
         this.setUpdatedOn( mapping.getUpdatedOn( ) );
         this.setRetryCount( mapping.getRetryCount( ) );
+        this.setTargetUserId( mapping.getTargetUserId( ) );
     }
 
-    public ProductMappingDTO( long targetAdapterId, long productId, String targetProductId, Date updatedOn )
+    public ProductMappingDTO( long targetAdapterId, long productId, String targetProductId, String targetUserId, Date updatedOn )
     {
         this.setProductId( productId );
         this.setTargetAdapterId( targetAdapterId );
         this.setTargetProductId( targetProductId );
         this.setUpdatedOn( updatedOn );
+        this.setTargetUserId( targetUserId );
     }
 
     @Override
@@ -80,6 +83,12 @@ implements IProductMapping, Serializable
     }
 
     @Override
+    public String getTargetUserId()
+    {
+        return targetUserId;
+    }
+
+    @Override
     public int compareTo( IProductMapping o )
     {
         if( o.getProductId() == getProductId() && o.getTargetProductId().equals( getTargetProductId() ) && o.getTargetAdapterId() == getTargetAdapterId() )
@@ -108,5 +117,10 @@ implements IProductMapping, Serializable
     public void setUpdatedOn( Date updatedOn )
     {
         this.updatedOn = updatedOn;
+    }
+
+    public void setTargetUserId( String targetUserId )
+    {
+        this.targetUserId = targetUserId;
     }
 }

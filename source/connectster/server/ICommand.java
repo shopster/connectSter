@@ -15,7 +15,7 @@ public interface ICommand<E>
     public static final String PARAMETER_SOURCE_ADAPTER_ID = "sourceAdapterId";
     public static final String PARAMETER_ADAPTER_DETAILS = "adapterDetails";
     public static final String PARAMETER_ADAPTER_DATA = "adapterData";
-    public static final String PARAMETER_CATEGORY = "userId";
+    public static final String PARAMETER_CATEGORY = "category";
     public static final String PARAMETER_PROPERTY = "property";
     public static final String PARAMETER_NAME = "name";
     public static final String PARAMETER_ORDER = "order";
@@ -27,8 +27,11 @@ public interface ICommand<E>
     public static final String PARAMETER_PRODUCT_MAPPING = "productMapping";
     public static final String PARAMETER_SOURCE_ID = "sourceId";
     public static final String PARAMETER_TARGET_PRODUCT_ID = "targetProductId";
+    public static final String PARAMETER_TARGET_USER_ID = "targetUserId";
     public static final String PARAMETER_USER_ID = "userId";
     public static final String PARAMETER_USER_PROPERTIES = "userProperties";
+    public static final String PARAMETER_USER = "user";
+    public static final String PARAMETER_USER_MAPPING = "userMapping";
     public static final String PARAMETER_MASTER_ID = "masterId";
 
     public IResponse<E> execute( Session session, Map<String,Object> parameters );

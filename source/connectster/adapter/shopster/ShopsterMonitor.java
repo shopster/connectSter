@@ -106,8 +106,11 @@ public class ShopsterMonitor
                     // store the time of query (could be negotiated with server for better accuracy)
                     Date currentDate = new Date( );
 
+                    // TODO : we must walk over a set of user mappings TO THIS ADAPTER now since we could have multiple shopster stores - change user.getName() to
+                    // TODO : userMapping.getName(), getting the user mapping by walking a list of all user mappings TO THIS ADAPTER.
+
                     // get all products for this user on the remote shopster system
-                    List<IProduct> products = adapter.remoteGetProducts( user, lastUpdated );
+                    List<IProduct> products = adapter.remoteGetProducts( user, user.getName( ), lastUpdated );
                     for( IProduct product : products )
                     {
                         // retrieve products by their source id to check if this is an update or (if not present) an addition
@@ -128,9 +131,9 @@ public class ShopsterMonitor
                                 IProduct newProduct = addedProductResponse.getSource( );
                                 for( IUserMapping userMapping : user.getUserMappings( ).values( ) )
                                 {
-                                    // to avoid superflous duplicates, guard this value - this needs a better approach
                                     ProductMappingDTO productMapping = new ProductMappingDTO( userMapping.getTargetAdapterId( ),
-                                        newProduct.getId( ), "*PENDING*" + newProduct.getSourceId( ), null );
+                                        newProduct.getId( ), "*PENDING*" + newProduct.getSourceId( ), userMapping.getTargetUserId( ),
+                                        null );
 
                                     IResponse<IProductMapping> productMappingResponse = connection.mapProduct( productMapping );
                                     if( productMappingResponse.getStatus( ) == IResponse.Status.Failure )

@@ -37,6 +37,7 @@ implements ICommand<IProductMapping>
             newMapping.setDestinationId( mapping.getTargetProductId( ) );
             newMapping.setProductId( mapping.getProductId( ) );
             newMapping.setUpdatedOn( mapping.getUpdatedOn( ) );
+            newMapping.setDestinationUserId( mapping.getTargetUserId( ) );
             session.save( newMapping );
             session.flush( );
 

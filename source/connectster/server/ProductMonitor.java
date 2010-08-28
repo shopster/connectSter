@@ -47,15 +47,12 @@ extends Monitor
                         // walk over each mapping for this product, checking for out of date (remote update) or null (remote add)
                         for( IProductMapping productMapping : product.getMappings( ) )
                         {
+                            // todo : this can be done via query, update query and remove this 
                             // no self-mappings here please
                             if( productMapping.getTargetAdapterId( ) == product.getSourceAdapterId( ) )
                             {
                                 continue;
                             }
-
-                            // todo : ffs! now its multi-adding shiz, lets get this damned classpath from the old connectster project
-                            // todo : project file, slim down all the jars, package shopster.* into a jar and wrap jaxb elements
-                            // todo : manually and get the resulting fun into git tonight
 
                             // obtain target adapter and guard against it not being present (adapter was deleted w/o cascade?)
                             IAdapter targetAdapter = adapters.get( productMapping.getTargetAdapterId( ) );
@@ -120,7 +117,7 @@ extends Monitor
     private static void addProduct( IAdapter targetAdapter, IProduct product, IProductMapping productMapping )
     {
         // add the product to the remote system
-        IResponse<IProductMapping> addProductResponse = targetAdapter.remoteAddProduct( product );
+        IResponse<IProductMapping> addProductResponse = targetAdapter.remoteAddProduct( productMapping.getTargetUserId( ), product );
         if( addProductResponse.getStatus( ) == IResponse.Status.Failure )
         {
             log.warning( "Unable to remotely add the product id: " + product.getId( ) + ", Reason: " +

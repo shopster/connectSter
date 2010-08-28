@@ -24,23 +24,26 @@ public class ProductMapping
 implements IProductMapping
 {
     public ProductMapping( ) { }
-    public ProductMapping( long productId, long destinationAdapterId, String destinationId )
+    public ProductMapping( long productId, long destinationAdapterId, String destinationId, String destinationUserId )
     {
         this.productId = productId;
         this.destinationAdapterId = destinationAdapterId;
         this.destinationId = destinationId;
+        this.setDestinationUserId( destinationUserId );
     }
 
     @Id
     @AttributeOverrides({
         @AttributeOverride(name = "productId", column = @Column(name="productId")),
         @AttributeOverride(name = "destinationAdapterId", column = @Column(name="destinationAdapterId")),
-        @AttributeOverride(name = "destinationId", column = @Column(name="destinationId"))
+        @AttributeOverride(name = "destinationId", column = @Column(name="destinationId")),
+        @AttributeOverride(name = "destinationUserId", column = @Column(name="destinationUserId"))
     })
 
     private long productId;
     private long destinationAdapterId;
     private String destinationId;
+    private String destinationUserId;
     private Date updatedOn;
     private int retryCount;
 
@@ -55,7 +58,7 @@ implements IProductMapping
         this.productId = productId;
     }
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(targetEntity=AdapterDetails.class, cascade=CascadeType.ALL)
     @JoinColumn(name="destinationAdapterId", nullable=false, referencedColumnName="id")
     public long getTargetAdapterId()
     {
@@ -104,8 +107,26 @@ implements IProductMapping
         return retryCount;
     }
 
+    @Override
+    public String getTargetUserId()
+    {
+        return destinationUserId;
+    }
+
     public void setRetryCount( int retryCount )
     {
         this.retryCount = retryCount;
+    }
+
+    @ManyToOne(targetEntity=UserMapping.class, cascade=CascadeType.ALL)
+    @JoinColumn(name="destinationUserId", nullable=false, referencedColumnName="sourceUserId")
+    public String getDestinationUserId( )
+    {
+        return destinationUserId;
+    }
+
+    public void setDestinationUserId( String destinationUserId )
+    {
+        this.destinationUserId = destinationUserId;
     }
 }
