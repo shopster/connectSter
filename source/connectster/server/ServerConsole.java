@@ -4,10 +4,10 @@ import connectster.adapter.shopify.ShopifyAdapter;
 import connectster.adapter.shopster.ShopsterAdapter;
 import connectster.server.entity.AdapterDetails;
 import connectster.server.entity.AdapterProperty;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -26,10 +26,17 @@ import java.util.Properties;
  * limitations under the License.
  */
 public class ServerConsole
+implements SignalHandler
 {
+    private static ServerConsole console;
+    private static ConnectsterServer server;
+
     public static void main( String ... args )
-    throws IOException
+    throws Exception
     {
+        console = new ServerConsole( );
+
+        // determine if a fresh install request is being asked for
         if( args.length == 2 && args[ 0 ].equalsIgnoreCase( "--install" ) )
         {
             Properties properties = new Properties( );
@@ -37,14 +44,32 @@ public class ServerConsole
             initializeSystem( properties );
         }
 
-        ConnectsterServer server = new ConnectsterServer( );
+        // build and start server
+        server = new ConnectsterServer( );
         server.startup( );
 
-        System.out.println( "Hit Enter to Quit Server Console ..." );
-        new InputStreamReader( System.in ).read( );
+        // register a shutdown hook to capture TERM/INT/ABORT signals and just sleep while app runs
+        installHooks( );
+        while( true ) { Thread.sleep( 0 ); }
+    }
 
+    private static void installHooks( )
+    {
+        Signal.handle( new Signal( "TERM" ), console );
+        Signal.handle( new Signal( "INT" ), console );
+        Signal.handle( new Signal( "ABRT" ), console );
+    }
+
+    /**
+     * Deal with signals to server console to quit/abort or interrupt.
+     * @param signal The signal being received by JVM.
+     */
+    @Override
+    public void handle( Signal signal )
+    {
+        System.out.println( "\n\n*** SHUTDOWN REQUESTED ***\n\n" );
         server.shutdown( );
-
+        System.exit( 0 );
     }
 
     /**
@@ -58,7 +83,7 @@ public class ServerConsole
     {
         // build shopster adapter details
         AdapterDetails shopsterAdapter = new AdapterDetails( "ConnectsterAdapter", "This is the connectster adapter.",
-            "ShopsterAdapter", "1.0" );
+            "connectster.adapter.shopster.ShopsterAdapter", "1.0" );
 
         List<AdapterProperty> shopsterProperties = new ArrayList<AdapterProperty>( );
         shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.WebServiceVersion.toString( ),
@@ -81,7 +106,7 @@ public class ServerConsole
 
         // build shopify adapter details and assign properties for test purposes
         AdapterDetails shopifyAdapter = new AdapterDetails( "ShopifyAdapter", "This is the shopify adapter implementation",
-            "ShopifyAdapter", "1.0" );
+            "connectster.adapter.shopify.ShopifyAdapter", "1.0" );
 
         List<AdapterProperty> adapterProperties = new ArrayList<AdapterProperty>( );
         adapterProperties.add( new AdapterProperty( ShopsterAdapter.Property.Namespace.toString( ),

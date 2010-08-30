@@ -54,8 +54,8 @@ public class ConnectsterServer
 
     public void shutdown( )
     {
-        shutdownAdapters( );
         shutdownMonitors( );
+        shutdownAdapters( );
         log.info( "Connectster Server Shutdown." );
     }
 
@@ -145,7 +145,7 @@ public class ConnectsterServer
                         MasterAdapterConnection masterConnection = ( MasterAdapterConnection )foundConnection;
                         connection = new SlaveAdapterConnection( masterConnection, new InstalledAdapter( adapter, details ) );
                     }
-
+                                                   
                     adapter.initialize( connection, details.getProperties( ) );
                     adapters.put( details.getId( ), connection );
                     log.info( "Adapter [" + details.getName( ) + "], has successfully been loaded and initialized." );

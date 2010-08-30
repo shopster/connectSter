@@ -70,7 +70,17 @@ implements IAdapter
     public void shutdown( )
     {
         log.info( "Shutting down ShopifyAdapter ..." );
-        monitor.stop( );
+        //monitor.stop( );
+        server.stop( 1 );
+
+        try
+        {
+            component.stop( );
+        }
+        catch( Exception x )
+        {
+            log.warning( "Unable to gracefully shutdown restlet embedded server: " + x.getMessage( ) );
+        }
     }
 
     @Override
