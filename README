@@ -1,4 +1,18 @@
-Welcome to Connectster.
+Connectster Project
+
+INDEX
+===============================================================
+Installing Built Connectster..................................1
+
+Development Environment Setup.................................2
+     Checking Out Connectster................................2A
+     Setting Up Your IDE.....................................2B
+     Satisfying All Dependencies.............................2C     
+===============================================================
+
+
+1-Installing Built Connectster
+==============================
 
 To install Connectster you need to execute the ServerConsole with the --install switch:
 
@@ -17,3 +31,75 @@ Hibernate configuration is looked for from starting folder, it should reside in:
     ./configuration/Hibernate.hbm.xml
     
     
+2-Development Environment Setup
+===============================
+
+Configuring your development environment to build Connectster involves checking out the source code, setting up your IDE and ensuring all dependencies are satisfied.  
+
+2A-Checking out Connectster:
+----------------------------
+Connectster has been checked into GitHUB and uses git for versioning.  To check out the project you can use one of the following URI's:
+
+SSH : git@github.com:shopster/connectSter.git
+HTTP: https://Lypheus@github.com/shopster/connectSter.git
+READ: git://github.com/shopster/connectSter.git
+
+All of this information and more on the project can be located at: http://github.com/shopster/connectSter
+
+
+2B-Setting up your IDE:
+-----------------------
+To setup your IDE for use with Connectster, consult the documentation specific to your IDE.  For intellij, you can import the project from GIT or create a new project based on an existing git checkout of Connectster.
+
+
+2C-Satisfying All Dependencies:
+-------------------------------
+When you have a project setup, the next step is to ensure that all required JAR files are used.  The following is a list all all JARS used in the project:
+
+commons-logging-1.1.jar
+ws-commons-util-1.0.2.jar
+xmlrpc-client-3.1.3.jar
+xmlrpc-common-3.1.3.jar
+ant-1.6.5.jar
+ant-antlr-1.6.5.jar
+ant-junit-1.6.5.jar
+ant-launcher-1.6.5.jar
+ant-swing-1.6.5.jar
+antlr-2.7.6.jar
+asm-attrs.jar
+c3p0-0.9.1.jar
+cglib-2.1.3.jar
+checkstyle-all.jar
+cleanimports.jar
+commons-collections-3.2.1.jar
+concurrent-1.3.2.jar
+dom4j-1.6.1.jar
+dom4j.jar
+ehcache-1.2.3.jar
+ejb3-persistence.jar
+fixtures.jar
+hibernate-annotations.jar
+hibernate-commons-annotations.jar
+hibernate-core.jar
+jaas.jar
+jacc-1_0-fr.jar
+javassist.jar
+jaxen-1.1-beta-7.jar
+jboss-cache.jar
+jboss-common.jar
+jboss-jmx.jar
+jboss-system.jar
+jgroups-2.2.8.jar
+jta.jar
+junit-4.5.jar
+log4j-1.2.11.jar
+mysql-connector-java-5.1.6-bin.jar
+oscache-2.1.jar
+proxool-0.8.3.jar
+slf4j-api.jar
+slf4j-simple-1.5.2.jar
+swarmcache-1.0rc2.jar
+syndiag2.jar
+versioncheck.jar
+xerces-2.6.2.jar
+xml-apis.jar
