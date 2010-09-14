@@ -42,7 +42,7 @@ implements IAdapter
 {
     public static String AuthenticationCategory = "authorization";
     public static enum Property { ConsumerKey, ConsumerSecret, Timeout, Protocol, ShopifyKey, ShopifySecret, RequestUri,
-        InstallCallbackUri, BaseCallbackUri
+        InstallCallbackUri, BaseCallbackUri, CallbackPort
     }
 
     public static final String METHOD_PRODUCTS = "/admin/products.xml";
@@ -57,7 +57,7 @@ implements IAdapter
     private Component component;
     private IAdapterConnection connection;
     private Map<String, IAdapterProperty> properties;
-    private ShopifyMonitor monitor;
+//    private ShopifyMonitor monitor;
     private HttpServer server;
 
     public ShopifyAdapter( )
@@ -105,7 +105,8 @@ implements IAdapter
         }
 
         // instantiate a REST server instance to accept incoming application
-        component.getServers( ).add( Protocol.HTTP, 8182 );
+        Integer port = Integer.parseInt( properties.get( Property.CallbackPort.toString( ) ).getValue( ) );
+        component.getServers( ).add( Protocol.HTTP, port );
         component.getDefaultHost( ).attach( new ShopifyApplication( ) );
 
         try
@@ -175,9 +176,6 @@ implements IAdapter
             ShopifyProduct shopifyProduct = ShopifyEntityHelper.toShopifyProduct( String.valueOf( product.getId( ) ), product );
             String entity = ShopifyEntityHelper.toXml( shopifyProduct );
 
-            // guard vs non type="array" specified for variants collections - fix this via registered converter with xstream?
-            entity = entity.replace( "<variants>", "<variants type=\"array\">" );
-
             // make remote call to shopify to add this entity
             String xml = invokeRestCall( targetUserId, Method.POST, METHOD_PRODUCTS, entity );
 
@@ -185,7 +183,7 @@ implements IAdapter
             ShopifyProduct resultProduct = ShopifyEntityHelper.toShopifyProduct( xml );
 
             // extract shopify id and use to map this product to shopify
-           ProductMappingDTO productMapping = new ProductMappingDTO( connection.getAdapterId( ), product.getId( ),
+            ProductMappingDTO productMapping = new ProductMappingDTO( connection.getAdapterId( ), product.getId( ),
                String.valueOf( resultProduct.getId( ) ), product.getSourceUserId( ), product.getLastUpdate( ) );
 
             result = new ResponseDTO<IProductMapping>( productMapping, IResponse.Status.Successful, "Remotely added product: " +
@@ -212,9 +210,6 @@ implements IAdapter
             shopifyProduct.setVariants( null );
             String entity = ShopifyEntityHelper.toXml( shopifyProduct );
 
-            // guard vs non type="array" specified for variants collections - fix this via registered converter with xstream?
-            entity = entity.replace( "<variants>", "<variants type=\"array\">" );
-            
             // make remote call to shopify to update this entity
             String normalizedMethod = METHOD_UPDATE_PRODUCT.replace( "{id}", mapping.getTargetProductId( ) );
             invokeRestCall( mapping.getTargetUserId( ), Method.PUT, normalizedMethod, entity );

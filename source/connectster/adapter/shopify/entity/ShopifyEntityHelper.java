@@ -61,7 +61,9 @@ public class ShopifyEntityHelper
 
     public static String toXml( ShopifyProduct product )
     {
-        return xstream.toXML( product );
+        String result = xstream.toXML( product );
+        result = result.replace( "<variants>", "<variants type=\"array\">" );
+        return result;
     }
 
     public static ShopifyOrder toShopifyOrder( String xml )

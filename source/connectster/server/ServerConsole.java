@@ -127,6 +127,8 @@ implements SignalHandler
             ( String )properties.get( "Shopify." + ShopifyAdapter.Property.ShopifySecret.toString( ) ), shopifyAdapter ) );
         adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.InstallCallbackUri.toString( ),
             ( String )properties.get( "Shopify." + ShopifyAdapter.Property.InstallCallbackUri.toString( ) ), shopifyAdapter ) );
+        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.CallbackPort.toString( ),
+            ( String )properties.get( "Shopify." + ShopifyAdapter.Property.CallbackPort.toString( ) ), shopifyAdapter ) );
         adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.BaseCallbackUri.toString( ),
             ( String )properties.get( "Shopify." + ShopifyAdapter.Property.BaseCallbackUri.toString( ) ), shopifyAdapter ) );
         adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.RequestUri.toString( ),
