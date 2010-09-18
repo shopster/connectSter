@@ -18,6 +18,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.Handler;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.logging.Logger;
@@ -25,7 +26,7 @@ import java.util.logging.Logger;
 public class ShopsterAdapter
 implements IAdapter
 {
-    public enum Property { ConsumerKey, ConsumerSecret, Namespace, Endpoint, WebServiceVersion, OAuthUri, AccessKey, AccessSecret }
+    public enum Property { Namespace, Endpoint, WebServiceVersion, OAuthUri, AccessKey, AccessSecret, KeyPrefix, SecretPrefix, AdapterPrefix }
 
     private static final int GET_ITEMS_PAGE_SIZE = 35;
     private static Logger log = Logger.getLogger( ShopsterAdapter.class.getName( ) );
@@ -36,7 +37,8 @@ implements IAdapter
     private static final BigDecimal KG_MODIFIER = new BigDecimal( 1000 );
     private static final BigDecimal LB_MODIFIER = new BigDecimal( 453.59237 );
 
-    private String endpoint, namespace, version, consumerKey, consumerSecret, oauthUri;
+    private Map<Long, KeyPair> keyMap;
+    private String endpoint, namespace, version, oauthUri;
     private IAdapterConnection connection;
     private ShopsterMonitor monitor;
 
@@ -48,12 +50,47 @@ implements IAdapter
         endpoint = properties.get( Property.Endpoint.toString( ) ).getValue( );
         namespace = properties.get( Property.Namespace.toString( ) ).getValue( );
         version = properties.get( Property.WebServiceVersion.toString( ) ).getValue( );
-        consumerKey = properties.get( Property.ConsumerKey.toString( ) ).getValue( );
-        consumerSecret = properties.get( Property.ConsumerSecret.toString( ) ).getValue( );
         oauthUri = properties.get( Property.OAuthUri.toString( ) ).getValue( );
+
+        // the key map for specific keys relating to a particular adapter, to do this first obtain all adapter prefixed keys
+        keyMap = new HashMap<Long, KeyPair>( );
+        for( IAdapterProperty property : properties.values( ) )
+        {
+            // found a new property specified by adapter, extract the adapter id off this key (i.e. AdapterPrefix-123 = 123)
+            String adapterPropertyName = property.getName( );
+            if( adapterPropertyName.startsWith( Property.AdapterPrefix.toString( ) ) )
+            {
+                try
+                {
+                    // validate key based on all 3 pieces being available and demarcated properly
+                    long adapterId = Long.parseLong( adapterPropertyName.split( "-" )[ 1 ] );
+                    IAdapterProperty keyProperty = properties.get( Property.KeyPrefix.toString( ) + "-" + adapterId );
+                    IAdapterProperty secretProperty = properties.get( Property.SecretPrefix.toString( ) + "-" + adapterId );
+
+                    if( keyProperty == null || secretProperty == null )
+                    {
+                        throw new IOException( "Unable to full parse key details, please verify key, secret and adapter: " +
+                            adapterPropertyName );
+                    }
+
+                    // insert keypair into map
+                    keyMap.put( adapterId, new KeyPair( keyProperty.getValue( ), secretProperty.getValue( ) ) );
+                }
+                catch( Exception x )
+                {
+                    log.warning( "Unable to parse key from: " + adapterPropertyName +
+                        ", ignoring bad key tag as this adapter will use default keys instead." );
+                }
+            }
+        }
 
         monitor = new ShopsterMonitor( this, connection );
         monitor.start( );
+    }
+
+    public boolean hasKey( Long id )
+    {
+        return keyMap.get( id ) != null;
     }
 
     @Override
@@ -67,11 +104,12 @@ implements IAdapter
      * Build a new service port, initialize with the appropriate endpoint, namespace and service version and
      * then set the oauth bindings w/oauthhandler.
      *
+     * @param sourceAdapterId The source adapter id, used to determine key set in this adapters case
      * @param user The user to authenticate against shopster with.
      * @return A thread safe instance of service port.
      * @throws AdapterException when user properties or mappings fail to load.
      */
-    private AuthMain buildProvider( IUser user )
+    private AuthMain buildProvider( IUser user, Long sourceAdapterId )
     throws AdapterException
     {
         // retrieve all user properties and validate we have an access key and access secret
@@ -100,14 +138,22 @@ implements IAdapter
         WSBindingProvider provider = ( WSBindingProvider )port;
         provider.getRequestContext( ).put( BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint );
         provider.setOutboundHeaders( Headers.create( new QName( namespace, WS_VERSION ), version ) );
+
+        // if they exist, use source adapters mapped keys, otherwise use the shopster default keys
+        KeyPair key = keyMap.get( sourceAdapterId );
+        if( key == null )
+        {
+            throw new AdapterException( "Unable to find a configured key for adapterId: " + sourceAdapterId );
+        }
+
         provider.getBinding( ).setHandlerChain( Collections.singletonList( ( Handler )new OAuthHandler(
-             endpoint, oauthUri, consumerKey, consumerSecret, accessToken, accessSecret ) ) );
+             endpoint, oauthUri, key.getConsumerKey(), key.getConsumerSecret(), accessToken, accessSecret ) ) );
 
         return new AuthMain( userMapping, port );
     }
 
     @Override
-    public List<IProduct> remoteGetProducts( IUser user, String targetUserId, Date lastUpdated )
+    public List<IProduct> remoteGetProducts( long sourceAdapterId, IUser user, String targetUserId, Date lastUpdated )
     throws AdapterException
     {
         try
@@ -134,7 +180,7 @@ implements IAdapter
             request.setPageSize( factory.createGetInventoryCategoriesRequestTypePageSize( GET_ITEMS_PAGE_SIZE ) );
 
             // build a new port for this request and get response
-            AuthMain auth = buildProvider( user );
+            AuthMain auth = buildProvider( user, sourceAdapterId );
             GetInventoryItemsResponseType response = auth.port.getInventoryItems( request );
             int itemsRemaining = response.getNumFound( ).getValue( );
             int pageIndex = 0;
@@ -277,7 +323,7 @@ implements IAdapter
 
         try
         {
-            AuthMain auth = buildProvider( order.getOwner( ) );
+            AuthMain auth = buildProvider( order.getOwner( ), order.getSourceAdapterId( ) );
             PlaceOrderResponseType orderResponse = auth.port.placeOrder( placeOrder );
             ResponseStatusType status = orderResponse.getStatus();
             if( ResponseStatusType.FAILED.equals( status ) )

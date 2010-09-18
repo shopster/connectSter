@@ -102,11 +102,9 @@ public class ShopifyMonitor
                     lastUpdated = ( Date )updateResponse.getSource( ).getValue( );
                 }
 
-                // TODO : we must walk over a set of user mappings TO THIS ADAPTER now since we could have multiple shopster stores - change user.getName() to
-                // TODO : userMapping.getName(), getting the user mapping by walking a list of all user mappings TO THIS ADAPTER.
-
+                // note : do we need to walk the keymap here? probably not but need to pass something so using sentinel value of '1'
                 // for each of the products represented, grab each product created since last poll
-                List<IProduct> products = adapter.remoteGetProducts( user, user.getName( ), lastUpdated );
+                List<IProduct> products = adapter.remoteGetProducts( 1, user, user.getName( ), lastUpdated );
                 for( IProduct product : products )
                 {
                     // verify we do not already have this product mapped in the system, if so just ignore it (no updates from shopify)

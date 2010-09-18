@@ -2,7 +2,9 @@ package connectster.adapter.shopify.resource;
 
 import connectster.adapter.shopify.AuthManager;
 import connectster.adapter.shopify.ShopifyAdapter;
+import connectster.adapter.shopify.ShopifyApplication;
 import connectster.adapter.shopify.entity.AuthDetails;
+import connectster.adapter.shopster.ShopsterAdapter;
 import connectster.api.entity.IAdapterProperty;
 import connectster.api.utility.GeneralUtilities;
 import org.restlet.resource.Get;
@@ -14,6 +16,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+/**
+ * This is an integration piece, which should be the only of a few places where shopster is referenced outside of its
+ * own scope.  Installation resources can make some assumptions about the nature of the authentication mechanism being used
+ * to onboard an adapter on behalf of a given user.
+ */
 public class ShopifyInstallResource
 extends ServerResource
 {
@@ -22,7 +29,7 @@ extends ServerResource
 
     @Get
     @SuppressWarnings( "unused" )
-    public String represent()
+    public String represent( )
     {
         requestRequestToken( );
         return "OK";
@@ -32,18 +39,24 @@ extends ServerResource
     {
         // create a unique id and initialize state
         String id = String.valueOf( ++ requestId );
+
+        // retrieve the application for this resource, assumed to be a shopify application, also obtain properties maps
+        ShopifyApplication application = ( ShopifyApplication )getApplication( );
+        Map<String, IAdapterProperty> masterProperties = application.getAdapterConnection( ).getMasterProperties( );
         Map<String, IAdapterProperty> properties = ShopifyAdapter.getInstance( ).getProperties( );
+        long adapterId = application.getAdapterConnection( ).getAdapterId( );
+
         String callbackUri = properties.get( ShopifyAdapter.Property.InstallCallbackUri.toString( ) ).getValue( ) + id;
         log.warning( "Servicing an adapter installation request with id: " + id );
 
         // setup scribe properties
         Properties scribeProperties = new Properties( );
-        scribeProperties.setProperty( "consumer.key", properties.get( ShopifyAdapter.Property.ConsumerKey.toString( ) ).getValue( ) );
-        scribeProperties.setProperty( "consumer.secret", properties.get( ShopifyAdapter.Property.ConsumerSecret.toString( ) ).getValue( ) );
+        scribeProperties.setProperty( "consumer.key", masterProperties.get( ShopsterAdapter.Property.KeyPrefix.toString( ) + "-" + adapterId ).getValue( ) );
+        scribeProperties.setProperty( "consumer.secret", masterProperties.get( ShopsterAdapter.Property.SecretPrefix.toString( ) + "-" + adapterId ).getValue( ) );
         scribeProperties.setProperty( "request.token.verb", "POST" );
-        scribeProperties.setProperty( "request.token.url", properties.get( ShopifyAdapter.Property.RequestUri.toString( ) ).getValue( ) );
+        scribeProperties.setProperty( "request.token.url", masterProperties.get( ShopsterAdapter.Property.OAuthUri.toString( ) ).getValue( ) );
         scribeProperties.setProperty( "access.token.verb", "POST" );
-        scribeProperties.setProperty( "access.token.url", properties.get( ShopifyAdapter.Property.RequestUri.toString( ) ).getValue( ) );
+        scribeProperties.setProperty( "access.token.url", masterProperties.get( ShopsterAdapter.Property.OAuthUri.toString( ) ).getValue( ) );
         scribeProperties.setProperty( "callback.url", callbackUri );
         Scribe scribe = new Scribe( scribeProperties );
 
@@ -67,7 +80,7 @@ extends ServerResource
         AuthManager.getInstance( ).add( id, details );
 
         // build callback string and forward browser to shopster to allow for callbacks
-        String uri = String.format( properties.get( ShopifyAdapter.Property.RequestUri.toString( ) ).getValue( ) + "?oauth_token=%s&oauth_callback=%s",
+        String uri = String.format( masterProperties.get( ShopsterAdapter.Property.OAuthUri.toString( ) ).getValue( ) + "?oauth_token=%s&oauth_callback=%s",
             GeneralUtilities.urlEncode( requestToken.getToken( ) ), GeneralUtilities.urlEncode( callbackUri ) );
         redirectPermanent( uri );
     }

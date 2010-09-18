@@ -6,7 +6,9 @@ import connectster.api.entity.*;
 import connectster.api.entity.implementation.AdapterDataDTO;
 import connectster.server.command.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class MasterAdapterConnection
@@ -28,10 +30,22 @@ implements IMasterProxy
     }
 
     @Override
+    public Map<String, IAdapterProperty> getMasterProperties()
+    {
+        return new HashMap<String,IAdapterProperty>( );
+    }
+
+    @Override
     public IResponse<IProductMapping> getProductMappingBySourceId( String sourceId )
     {
         return EntityHelper.execute( new GetProductMappingBySourceIdCommand( ), EntityHelper.listToMap( ICommand.PARAMETER_SOURCE_ID,
             sourceId, ICommand.PARAMETER_ADAPTER_ID, getAdapterId( ) ) );
+    }
+
+    @Override
+    public Map<String, IAdapterProperty> getProperties()
+    {
+        return adapter.getProperties( );
     }
 
     @Override

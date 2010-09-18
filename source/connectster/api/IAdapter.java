@@ -27,7 +27,7 @@ import java.util.Map;
 public interface IAdapter
 {
     public void initialize( IAdapterConnection connection, Map<String,IAdapterProperty> properties ) throws AdapterException;
-    public List<IProduct> remoteGetProducts( IUser user, String targetUserId, Date lastUpdated ) throws AdapterException;
+    public List<IProduct> remoteGetProducts( long sourceAdapterId, IUser user, String targetUserId, Date lastUpdated ) throws AdapterException;
     public IResponse<IProductMapping> remoteAddProduct( String targetUserId, IProduct product );
     public IResponse<IProduct> remoteUpdateProduct( IProduct product, IProductMapping mapping );
     public IResponse<String> remoteAddOrder( IOrder order );

@@ -4,6 +4,7 @@ import connectster.api.entity.*;
 import connectster.api.entity.implementation.AdapterDataDTO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -29,6 +30,7 @@ import java.util.Set;
 public interface IAdapterConnection
 {
     public long getAdapterId( );
+    public Map<String,IAdapterProperty> getMasterProperties( );
     public IResponse<IProductMapping> getProductMappingBySourceId( String sourceId );
     public IResponse<IProduct> getProductBySource( long ownerId, String sourceProductId );
     public IResponse<IProductMapping> getProductMapping( long sourceAdapterId, long productId, String targetUserId );

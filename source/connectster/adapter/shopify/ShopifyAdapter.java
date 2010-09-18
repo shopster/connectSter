@@ -41,9 +41,7 @@ public class ShopifyAdapter
 implements IAdapter
 {
     public static String AuthenticationCategory = "authorization";
-    public static enum Property { ConsumerKey, ConsumerSecret, Timeout, Protocol, ShopifyKey, ShopifySecret, RequestUri,
-        InstallCallbackUri, BaseCallbackUri, CallbackPort
-    }
+    public static enum Property { Timeout, Protocol, ShopifyKey, ShopifySecret, InstallCallbackUri, BaseCallbackUri, CallbackPort }
 
     public static final String METHOD_PRODUCTS = "/admin/products.xml";
     public static final String METHOD_UPDATE_PRODUCT = "/admin/products/{id}.xml";
@@ -107,14 +105,14 @@ implements IAdapter
         // instantiate a REST server instance to accept incoming application
         Integer port = Integer.parseInt( properties.get( Property.CallbackPort.toString( ) ).getValue( ) );
         component.getServers( ).add( Protocol.HTTP, port );
-        component.getDefaultHost( ).attach( new ShopifyApplication( ) );
+        component.getDefaultHost( ).attach( new ShopifyApplication( connection ) );
 
         try
         {
             // start up restlet internal server
             component.start( );
 
-            // start up the grizzly server for jersey (not needed when RESTlet for webhooks is fixed)
+            // start up the grizzly server for jersey (not needed when RESTlet webhooks is fixed)
             IAdapterProperty webhookUri = properties.get( Property.BaseCallbackUri.toString( ) );
             server = HttpServerFactory.create( webhookUri.getValue( ) + "/" );
             server.start();
@@ -132,7 +130,7 @@ implements IAdapter
     }
 
     @Override
-    public List<IProduct> remoteGetProducts( IUser user, String targetUserId, Date lastUpdated )
+    public List<IProduct> remoteGetProducts( long sourceAdapterId, IUser user, String targetUserId, Date lastUpdated )
     throws AdapterException
     {
         try

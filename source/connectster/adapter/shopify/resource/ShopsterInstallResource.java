@@ -72,7 +72,7 @@ extends ServerResource
 
                     try
                     {
-                        ShopifyAdapter.getInstance( ).invokeRestCall( user.getName( ), Method.POST, ShopifyAdapter.METHOD_ADD_WEBHOOK,
+                        ShopifyAdapter.getInstance( ).invokeRestCall( details.getStore( ), Method.POST, ShopifyAdapter.METHOD_ADD_WEBHOOK,
                             ShopifyEntityHelper.toXml( webhook ) );
                         log.info( "Webhook installed for: " + user.getName( ) );
                     }

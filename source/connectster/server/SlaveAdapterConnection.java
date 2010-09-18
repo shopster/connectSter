@@ -6,6 +6,7 @@ import connectster.api.entity.*;
 import connectster.api.entity.implementation.AdapterDataDTO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SlaveAdapterConnection
@@ -25,6 +26,12 @@ extends AdapterConnection
     public long getAdapterId()
     {
         return adapterId;
+    }
+
+    @Override
+    public Map<String, IAdapterProperty> getMasterProperties()
+    {
+        return master.getProperties( );
     }
 
     @Override

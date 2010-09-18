@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class ShopsterMonitor
 {
     private static final String LAST_UPDATED_CATEGORY = "LastUpdated";
-    private static final int POLL_INTERVAL = 2000;
+    private static final int POLL_INTERVAL = 60000;
     private static Logger log = Logger.getLogger( ShopsterAdapter.class.getName( ) );
 
     private ShopsterAdapter adapter;
@@ -109,42 +109,52 @@ public class ShopsterMonitor
                     // TODO : we must walk over a set of user mappings TO THIS ADAPTER now since we could have multiple shopster stores - change user.getName() to
                     // TODO : userMapping.getName(), getting the user mapping by walking a list of all user mappings TO THIS ADAPTER.
 
-                    // get all products for this user on the remote shopster system
-                    List<IProduct> products = adapter.remoteGetProducts( user, user.getName( ), lastUpdated );
-                    for( IProduct product : products )
+                    // walk over each adapter for which there exists a mapping for this user, this redundant loop is needed to request for each key
+                    for( IUserMapping mapping : user.getUserMappings( ).values( ) )
                     {
-                        // retrieve products by their source id to check if this is an update or (if not present) an addition
-                        IResponse<IProduct> productResponse = connection.getProductBySource( user.getId( ), product.getSourceId( ) );
-                        if( productResponse.getStatus( ) == IResponse.Status.Successful )
+                        // determine the source adapter to appropriate the correct keypair for this request
+                        if( !adapter.hasKey( mapping.getTargetAdapterId( ) ) )
                         {
-                            // don't update the product mappings since the monitor will check for lastUpdate conflicts anyhow
-                            long productId = productResponse.getSource( ).getId( );
-                            IResponse<IProduct> response = connection.updateProduct( productId, product );
-                            log.info( "   Existing product: " + product.getName( ) + ", Message: " + response.getMessage( ) );
+                            continue;
                         }
-                        else
-                        {
-                            // create a new product with mappings 
-                            IResponse<IProduct> addedProductResponse = connection.addProduct( product );
-                            if( addedProductResponse.getStatus( ) == IResponse.Status.Successful )
-                            {
-                                IProduct newProduct = addedProductResponse.getSource( );
-                                for( IUserMapping userMapping : user.getUserMappings( ).values( ) )
-                                {
-                                    ProductMappingDTO productMapping = new ProductMappingDTO( userMapping.getTargetAdapterId( ),
-                                        newProduct.getId( ), "*PENDING*" + newProduct.getSourceId( ), userMapping.getTargetUserId( ),
-                                        null );
 
-                                    IResponse<IProductMapping> productMappingResponse = connection.mapProduct( productMapping );
-                                    if( productMappingResponse.getStatus( ) == IResponse.Status.Failure )
+                        // get all products for this user on the remote shopster system
+                        List<IProduct> products = adapter.remoteGetProducts( mapping.getTargetAdapterId(), user, user.getName( ), lastUpdated );
+                        for( IProduct product : products )
+                        {
+                            // retrieve products by their source id to check if this is an update or (if not present) an addition
+                            IResponse<IProduct> productResponse = connection.getProductBySource( user.getId( ), product.getSourceId( ) );
+                            if( productResponse.getStatus( ) == IResponse.Status.Successful )
+                            {
+                                // don't update the product mappings since the monitor will check for lastUpdate conflicts anyhow
+                                long productId = productResponse.getSource( ).getId( );
+                                IResponse<IProduct> response = connection.updateProduct( productId, product );
+                                log.info( "   Existing product: " + product.getName( ) + ", Message: " + response.getMessage( ) );
+                            }
+                            else
+                            {
+                                // create a new product with mappings
+                                IResponse<IProduct> addedProductResponse = connection.addProduct( product );
+                                if( addedProductResponse.getStatus( ) == IResponse.Status.Successful )
+                                {
+                                    IProduct newProduct = addedProductResponse.getSource( );
+                                    for( IUserMapping userMapping : user.getUserMappings( ).values( ) )
                                     {
-                                        log.warning( "Unable to map product id: " + newProduct.getId( ) + " to adapter id: " +
-                                            userMapping.getTargetAdapterId( ) + " for user id: " + userMapping.getTargetUserId( ) );
+                                        ProductMappingDTO productMapping = new ProductMappingDTO( userMapping.getTargetAdapterId( ),
+                                            newProduct.getId( ), "*PENDING*" + newProduct.getSourceId( ), userMapping.getTargetUserId( ),
+                                            null );
+
+                                        IResponse<IProductMapping> productMappingResponse = connection.mapProduct( productMapping );
+                                        if( productMappingResponse.getStatus( ) == IResponse.Status.Failure )
+                                        {
+                                            log.warning( "Unable to map product id: " + newProduct.getId( ) + " to adapter id: " +
+                                                userMapping.getTargetAdapterId( ) + " for user id: " + userMapping.getTargetUserId( ) );
+                                        }
                                     }
                                 }
-                            }
 
-                            log.info( "   New product: " + product.getName( ) + ", Message: " + addedProductResponse.getMessage( ) );
+                                log.info( "   New product: " + product.getName( ) + ", Message: " + addedProductResponse.getMessage( ) );
+                            }
                         }
                     }
 

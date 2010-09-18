@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 @Path("/shopify/webhook")
 public class ShopifyWebhookJersey
 {
-    private static final Logger log = Logger.getLogger( ShopifyWebhookResource.class.getName( ) );
+    private static final Logger log = Logger.getLogger( ShopifyWebhookJersey.class.getName( ) );
 
     /**
      * Consume an incoming Order event, this method will consume the order and attach it to the userid

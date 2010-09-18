@@ -5,6 +5,7 @@ import connectster.api.entity.implementation.AdapterDataDTO;
 import connectster.server.AdapterConnection;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,6 +23,7 @@ import java.util.Set;
  */
 public interface IMasterProxy
 {
+    public Map<String, IAdapterProperty> getProperties( );
     public IResponse<IProductMapping> proxyGetProductMappingBySourceId( AdapterConnection slaveAdapter, String sourceId );
     public IResponse<IProduct> proxyGetProductBySource( AdapterConnection slaveAdapter, long ownerId, String sourceProductId );
     public IResponse<IProductMapping> proxyGetProductMapping( AdapterConnection slaveAdapter, long adapterId, long productId, String targetUserId );

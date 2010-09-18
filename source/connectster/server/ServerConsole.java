@@ -1,7 +1,5 @@
 package connectster.server;
 
-import connectster.adapter.shopify.ShopifyAdapter;
-import connectster.adapter.shopster.ShopsterAdapter;
 import connectster.server.entity.AdapterDetails;
 import connectster.server.entity.AdapterProperty;
 import sun.misc.Signal;
@@ -28,6 +26,9 @@ import java.util.Properties;
 public class ServerConsole
 implements SignalHandler
 {
+    private static final String SHOPSTER_PREFIX = "Shopster.";
+    private static final String SHOPIFY_PREFIX = "Shopify.";
+
     private static ServerConsole console;
     private static ConnectsterServer server;
 
@@ -85,19 +86,17 @@ implements SignalHandler
         AdapterDetails shopsterAdapter = new AdapterDetails( "ConnectsterAdapter", "This is the connectster adapter.",
             "connectster.adapter.shopster.ShopsterAdapter", "1.0" );
 
+        // read in all the shopster properties
         List<AdapterProperty> shopsterProperties = new ArrayList<AdapterProperty>( );
-        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.WebServiceVersion.toString( ),
-            ( String )properties.get( "Shopster." + ShopsterAdapter.Property.WebServiceVersion.toString( ) ), shopsterAdapter ) );
-        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.OAuthUri.toString( ),
-            ( String )properties.get( "Shopster." + ShopsterAdapter.Property.OAuthUri.toString( ) ), shopsterAdapter ) );
-        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.Namespace.toString( ),
-            ( String )properties.get( "Shopster." + ShopsterAdapter.Property.Namespace.toString( ) ), shopsterAdapter ) );
-        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.Endpoint.toString( ),
-            ( String )properties.get( "Shopster." + ShopsterAdapter.Property.Endpoint.toString( ) ), shopsterAdapter ) );
-        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.ConsumerKey.toString( ),
-            ( String )properties.get( "Shopster." + ShopsterAdapter.Property.ConsumerKey.toString( ) ), shopsterAdapter ) );
-        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.ConsumerSecret.toString( ),
-            ( String )properties.get( "Shopster." + ShopsterAdapter.Property.ConsumerSecret.toString( ) ), shopsterAdapter ) );
+        for( Object rawKey : properties.keySet( ) )
+        {
+            String key = ( String )rawKey;
+            if( key.startsWith( SHOPSTER_PREFIX ) )
+            {
+                String normalizedKey = key.substring( SHOPSTER_PREFIX.length( ) );
+                shopsterProperties.add( new AdapterProperty( normalizedKey, ( String )properties.get( key ), shopsterAdapter ) );
+            }
+        }
         shopsterAdapter.setAdapterProperties( shopsterProperties );
 
         HibernateUtility.transaction( );
@@ -108,32 +107,18 @@ implements SignalHandler
         AdapterDetails shopifyAdapter = new AdapterDetails( "ShopifyAdapter", "This is the shopify adapter implementation",
             "connectster.adapter.shopify.ShopifyAdapter", "1.0" );
 
-        List<AdapterProperty> adapterProperties = new ArrayList<AdapterProperty>( );
-        adapterProperties.add( new AdapterProperty( ShopsterAdapter.Property.Namespace.toString( ),
-            ( String )properties.get( "Shopify." + ShopsterAdapter.Property.Namespace.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopsterAdapter.Property.Endpoint.toString( ),
-            ( String )properties.get( "Shopify." + ShopsterAdapter.Property.Endpoint.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopsterAdapter.Property.ConsumerKey.toString( ),
-            ( String )properties.get( "Shopify." + ShopsterAdapter.Property.ConsumerKey.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopsterAdapter.Property.ConsumerSecret.toString( ),
-            ( String )properties.get( "Shopify." + ShopsterAdapter.Property.ConsumerSecret.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.Protocol.toString( ),
-            ( String )properties.get( "Shopify." + ShopifyAdapter.Property.Protocol.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.Timeout.toString( ),
-            ( String )properties.get( "Shopify." + ShopifyAdapter.Property.Timeout.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.ShopifyKey.toString( ),
-            ( String )properties.get( "Shopify." + ShopifyAdapter.Property.ShopifyKey.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.ShopifySecret.toString( ),
-            ( String )properties.get( "Shopify." + ShopifyAdapter.Property.ShopifySecret.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.InstallCallbackUri.toString( ),
-            ( String )properties.get( "Shopify." + ShopifyAdapter.Property.InstallCallbackUri.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.CallbackPort.toString( ),
-            ( String )properties.get( "Shopify." + ShopifyAdapter.Property.CallbackPort.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.BaseCallbackUri.toString( ),
-            ( String )properties.get( "Shopify." + ShopifyAdapter.Property.BaseCallbackUri.toString( ) ), shopifyAdapter ) );
-        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.RequestUri.toString( ),
-            ( String )properties.get( "Shopify." + ShopifyAdapter.Property.RequestUri.toString( ) ), shopifyAdapter ) );
-        shopifyAdapter.setAdapterProperties( adapterProperties );
+        // read in all the shopify properties
+        List<AdapterProperty> shopifyProperties = new ArrayList<AdapterProperty>( );
+        for( Object rawKey : properties.keySet( ) )
+        {
+            String key = ( String )rawKey;
+            if( key.startsWith( SHOPIFY_PREFIX ) )
+            {
+                String normalizedKey = key.substring( SHOPIFY_PREFIX.length( ) );
+                shopifyProperties.add( new AdapterProperty( normalizedKey,( String )properties.get( key ), shopifyAdapter ) );
+            }
+        }
+        shopifyAdapter.setAdapterProperties( shopifyProperties );
         shopifyAdapter.setMaster( shopsterAdapter );
 
         HibernateUtility.transaction( );
