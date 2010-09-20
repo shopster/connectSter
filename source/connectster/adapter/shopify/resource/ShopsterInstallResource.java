@@ -16,6 +16,7 @@ import org.restlet.resource.ServerResource;
 import org.scribe.oauth.Scribe;
 import org.scribe.oauth.Token;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 public class ShopsterInstallResource
@@ -63,23 +64,50 @@ extends ServerResource
                 }
                 else
                 {
-                    // todo : check if a webhook already exists
-
                     // build a webhook object for this request, it will be externalized as an xml request to shopify
                     ShopifyWebhook webhook = new ShopifyWebhook( );
                     webhook.setAddress( baseCallbackUri.getValue( ) + ShopifyApplication.WEBHOOK_METHOD + "?id=" + user.getId( ) );
                     webhook.setTopic( "orders/create" );
 
+                    boolean installWebhook = true;
                     try
                     {
-                        ShopifyAdapter.getInstance( ).invokeRestCall( details.getStore( ), Method.POST, ShopifyAdapter.METHOD_ADD_WEBHOOK,
-                            ShopifyEntityHelper.toXml( webhook ) );
-                        log.info( "Webhook installed for: " + user.getName( ) );
+                        // create the webhook on the shopify end for this user/adapter configuration
+                        String xmlResponse = ShopifyAdapter.getInstance( ).invokeRestCall( details.getStore( ), Method.GET, ShopifyAdapter.METHOD_ADD_WEBHOOK, null );
+                        if( xmlResponse != null )
+                        {
+                            List<ShopifyWebhook> webhooks = ShopifyEntityHelper.toShopifyWebhookList( xmlResponse );
+                            for( ShopifyWebhook installedWebhook : webhooks )
+                            {
+                                if( webhook.getAddress( ).equalsIgnoreCase( installedWebhook.getAddress( ) ) )
+                                {
+                                    installWebhook = false;
+                                    break;
+                                }
+                            }
+                        }
+
                     }
                     catch( ShopifyRestException x )
                     {
-                        log.warning( "Problem encountered registering webhook for: " + user.getName( ) + ", user may need to " +
-                            " set webhook manually to: " + baseCallbackUri + ", Reason: " + x.getMessage( ) );
+                        log.warning( "Problem encountered verifying webhook for: " + user.getName( ) + ", this may lead to multiple " +
+                            " registered webhooks, Reason: " + x.getMessage( ) );
+                    }
+
+                    if( installWebhook )
+                    {
+                        try
+                        {
+                            // create the webhook on the shopify end for this user/adapter configuration
+                            ShopifyAdapter.getInstance( ).invokeRestCall( details.getStore( ), Method.POST, ShopifyAdapter.METHOD_ADD_WEBHOOK,
+                                ShopifyEntityHelper.toXml( webhook ) );
+                            log.info( "Webhook installed for: " + user.getName( ) );
+                        }
+                        catch( ShopifyRestException x )
+                        {
+                            log.warning( "Problem encountered registering webhook for: " + user.getName( ) + ", user may need to " +
+                                " set webhook manually to: " + baseCallbackUri + ", Reason: " + x.getMessage( ) );
+                        }
                     }
                 }
             }

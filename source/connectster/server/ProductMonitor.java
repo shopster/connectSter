@@ -47,7 +47,6 @@ extends Monitor
                         // walk over each mapping for this product, checking for out of date (remote update) or null (remote add)
                         for( IProductMapping productMapping : product.getMappings( ) )
                         {
-                            // todo : this can be done via query, update query and remove this 
                             // no self-mappings here please
                             if( productMapping.getTargetAdapterId( ) == product.getSourceAdapterId( ) )
                             {
@@ -69,7 +68,7 @@ extends Monitor
                                 addProduct( targetAdapter, product, productMapping );
                             }
                             else
-                            if( productMapping.getUpdatedOn( ).compareTo( product.getLastUpdate( ) ) == -1 )
+                            if( productChanged( product, productMapping ) )
                             {
                                 updateProduct( targetAdapter, product, productMapping );
                             }
@@ -84,8 +83,13 @@ extends Monitor
         } );
     }
 
+    private static boolean productChanged( IProduct product, IProductMapping productMapping )
+    {
+        return productMapping.getUpdatedOn( ).compareTo( product.getLastUpdate( ) ) == -1;
+    }
+
     /** Updates a given product based on the provided product mapping and target adapter.  If the product does not
-     *  exist remotely, this method will not add a new product.
+     *  exist remotely, then no product will be added..
      *
      * @param targetAdapter The target adapter to send this product to.
      * @param product The product details to send.

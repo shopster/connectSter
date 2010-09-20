@@ -76,6 +76,12 @@ public class ShopifyEntityHelper
         return ( ShopifyProduct )xstream.fromXML( xml );
     }
 
+    @SuppressWarnings( "unchecked" )
+    public static List<ShopifyWebhook> toShopifyWebhookList( String xml )
+    {
+        return ( List<ShopifyWebhook> )xstream.fromXML( xml );
+    }
+
     public static ShopifyProduct toShopifyProduct( String id, IProduct product )
     {
         ShopifyProduct shopifyProduct = new ShopifyProduct( );
@@ -217,6 +223,7 @@ public class ShopifyEntityHelper
         xstream.aliasField( "credit-card-company", ShopifyPaymentDetails.class, "creditCardCompany" );
 
         // webhook
+        xstream.alias( "webhooks", List.class );
         xstream.alias( "webhook", ShopifyWebhook.class );
 
         registerConverters( xstream );

@@ -166,12 +166,7 @@ implements IAdapter
                 GregorianCalendar calendar = new GregorianCalendar( );
                 calendar.setTime( lastUpdated );
 
-                XMLGregorianCalendar xmlCalendar = DatatypeFactory.newInstance( ).newXMLGregorianCalendar( );
-                xmlCalendar.setYear( calendar.get( GregorianCalendar.YEAR ) );
-                xmlCalendar.setMonth( calendar.get( GregorianCalendar.MONTH ) );
-                xmlCalendar.setDay( calendar.get( GregorianCalendar.DAY_OF_MONTH ) );
-                xmlCalendar.setTime( calendar.get( GregorianCalendar.HOUR ), calendar.get( GregorianCalendar.MINUTE ),
-                    calendar.get( GregorianCalendar.SECOND ) );
+                XMLGregorianCalendar xmlCalendar = DatatypeFactory.newInstance( ).newXMLGregorianCalendar( calendar );
                 request.setLastUpdatedSince( factory.createGetInventoryItemsRequestTypeLastUpdatedSince( xmlCalendar ) );
             }
 

@@ -199,7 +199,7 @@ implements IAdapter
     public IResponse<IProduct> remoteUpdateProduct( IProduct product, IProductMapping mapping )
     {
         IResponse<IProduct> result;
-
+                              
         try
         {
             // convert connectster product to a shopify product and then build an xml entity from it
