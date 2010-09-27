@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 public class ProductMonitor
 extends Monitor
 {
-    public static int PRODUCT_MONITOR_INTERVAL = 120000;
+    public static int PRODUCT_MONITOR_INTERVAL = 10000;
     private static Logger log = Logger.getLogger( ProductMonitor.class.getName( ) );
 
     public ProductMonitor( final Map<Long, IAdapter> adapters )
@@ -77,7 +77,7 @@ extends Monitor
                 }
                 else
                 {
-                    log.warning( "Error occured attempting to fetch out of date products, Reason: " + productResponse.getMessage( ) );
+                    log.warning( "Error occurred attempting to fetch out of date products, Reason: " + productResponse.getMessage( ) );
                 }
             }
         } );

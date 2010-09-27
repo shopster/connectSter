@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class ShopsterMonitor
 {
     private static final String LAST_UPDATED_CATEGORY = "LastUpdated";
-    private static final int POLL_INTERVAL = 60000;
+    private static final int POLL_INTERVAL = 30000;
     private static Logger log = Logger.getLogger( ShopsterAdapter.class.getName( ) );
 
     private ShopsterAdapter adapter;

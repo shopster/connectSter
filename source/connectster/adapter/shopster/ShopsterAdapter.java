@@ -1,7 +1,7 @@
 package connectster.adapter.shopster;
 
-import com.sun.xml.internal.ws.api.message.Headers;
-import com.sun.xml.internal.ws.developer.WSBindingProvider;
+import com.sun.xml.ws.api.message.Headers;
+import com.sun.xml.ws.developer.WSBindingProvider;
 import connectster.api.IAdapter;
 import connectster.api.IAdapterConnection;
 import connectster.api.IResponse;
@@ -28,7 +28,7 @@ implements IAdapter
 {
     public enum Property { Namespace, Endpoint, WebServiceVersion, OAuthUri, AccessKey, AccessSecret, KeyPrefix, SecretPrefix, AdapterPrefix }
 
-    private static final int GET_ITEMS_PAGE_SIZE = 35;
+    private static final int GET_ITEMS_PAGE_SIZE = 24;
     private static Logger log = Logger.getLogger( ShopsterAdapter.class.getName( ) );
     private static final String WS_VERSION = "Version";
     private static final String DEFAULT_VENDOR = "Shopster User";
@@ -133,7 +133,7 @@ implements IAdapter
         String accessToken = userProperties.get( Property.AccessKey.toString( ) ).getValue( );
         String accessSecret = userProperties.get( Property.AccessSecret.toString( ) ).getValue( );
 
-        Main main = new Main( );
+        Main main = new Main( );    
         IMain port = main.getMainBindingIMain( );
         WSBindingProvider provider = ( WSBindingProvider )port;
         provider.getRequestContext( ).put( BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint );

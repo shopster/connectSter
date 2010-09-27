@@ -55,7 +55,7 @@ public class ShopifyWebhookJersey
         catch( Throwable x )
         {
             log.warning( "Error occured during webhook processing: " + x.getMessage( ) );
-            throw new WebApplicationException( x, Response.Status.BAD_REQUEST );
+            throw new WebApplicationException( x, Response.Status.BAD_REQUEST.getStatusCode( ) );
         }
 
         return "OK\n\n";

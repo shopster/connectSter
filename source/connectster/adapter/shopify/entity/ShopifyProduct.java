@@ -86,6 +86,10 @@ implements Serializable
     public void setProductType( String productType )
     {
         this.productType = productType;
+        if( productType == null || productType.isEmpty( ) )
+        {
+            this.productType = "General";
+        }
     }
 
     public Date getPublishedAt()
