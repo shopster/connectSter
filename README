@@ -49,57 +49,126 @@ All of this information and more on the project can be located at: http://github
 
 2B-Setting up your IDE:
 -----------------------
-To setup your IDE for use with Connectster, consult the documentation specific to your IDE.  For intellij, you can import the project from GIT or create a new project based on an existing git checkout of Connectster.
+Consult the documentation for your IDE for specifics, however in general you can:
+
+- Import the project from GIT or create a new project based on an existing git checkout of Connectster.
+- Add each of the dependencies listed to your classpath.
+- Ensure that webservices-api.jar (for metro) is in an endorsed folder, and use -Djava.endorsed.dirs=? to specify where to resolve webservices-api.jar from.
+- Add a Hibernate facet/config to ensure hibernate settings are taken into account.
+- Create a simple "EndToEnd" test drive for executing connectster and seeing it run, as shown below but with your own keys.
+
+package com;
+
+import connectster.adapter.shopify.ShopifyAdapter;
+import connectster.adapter.shopster.ShopsterAdapter;
+import connectster.server.ConnectsterServer;
+import connectster.server.HibernateUtility;
+import connectster.server.entity.AdapterDetails;
+import connectster.server.entity.AdapterProperty;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+public class EndToEndTest
+{
+    private ConnectsterServer server;
+
+    @Before
+    public void startupAdapter( )
+    {
+        // build shopster adapter details
+        AdapterDetails shopsterAdapter = new AdapterDetails( "ShopsterAdapter", "This is the shopster adapter implementation.",
+            "connectster.adapter.shopster.ShopsterAdapter", "1.0" );
+
+        List<AdapterProperty> shopsterProperties = new ArrayList<AdapterProperty>( );
+        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.WebServiceVersion.toString( ), "0.2", shopsterAdapter ) );
+        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.OAuthUri.toString( ), "http://my.sandbox.shopster.com/OAuth.ashx", shopsterAdapter ) );
+        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.Namespace.toString( ), "urn:shopster:apis:main", shopsterAdapter ) );
+        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.Endpoint.toString( ), "http://api1.sandbox.shopster.com/Main.svc", shopsterAdapter ) );
+
+		// NOTE: this assumes the next adapter in the list will have a key of '2', you can determine this by adding these properties after hibernate creates the adapter for a better approach
+        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.KeyPrefix.toString( ) + "-2", "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", shopsterAdapter ) );
+        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.SecretPrefix.toString( ) + "-2", "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", shopsterAdapter ) );
+        shopsterProperties.add( new AdapterProperty( ShopsterAdapter.Property.AdapterPrefix.toString( ) + "-2", "2", shopsterAdapter ) );
+
+        shopsterAdapter.setAdapterProperties( shopsterProperties ); 
+
+        HibernateUtility.transaction( );
+        HibernateUtility.getSession( ).save( shopsterAdapter );
+        HibernateUtility.commit( );
+
+        // build shopify adapter details and assign properties for test purposes
+        AdapterDetails shopifyAdapter = new AdapterDetails( "ShopifyAdapter", "This is the shopify adapter implementation",
+            "connectster.adapter.shopify.ShopifyAdapter", "1.0" );
+
+        List<AdapterProperty> adapterProperties = new ArrayList<AdapterProperty>( );
+        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.InstallCallbackUri.toString( ), "http://localhost:8182/install-adapter-callback/", shopifyAdapter ) );
+        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.Protocol.toString( ), "https", shopifyAdapter ) );
+        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.Timeout.toString( ), "300000", shopifyAdapter ) );
+        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.ShopifyKey.toString( ), "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", shopifyAdapter ) );
+        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.ShopifySecret.toString( ), "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", shopifyAdapter ) );
+        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.CallbackPort.toString( ), "8182", shopifyAdapter ) );
+        adapterProperties.add( new AdapterProperty( ShopifyAdapter.Property.BaseCallbackUri.toString( ), "http://myIpAddress:8183", shopifyAdapter ) );
+        shopifyAdapter.setAdapterProperties( adapterProperties );
+        shopifyAdapter.setMaster( shopsterAdapter );
+
+        HibernateUtility.transaction( );
+        HibernateUtility.getSession( ).save( shopifyAdapter );
+        HibernateUtility.commit( );
+
+        // start server and initialize adapters
+        server = new ConnectsterServer( );
+        server.startup( );
+    }
+
+    @After
+    public void shutdownAdapter( )
+    {
+        server.shutdown( );
+    }
+
+    @Test
+    public void testServer( )
+    throws Exception
+    {
+        BufferedReader reader = new BufferedReader( new InputStreamReader( System.in ) );
+        reader.readLine( );
+    }
+}
 
 
 2C-Satisfying All Dependencies:
 -------------------------------
-When you have a project setup, the next step is to ensure that all required JAR files are used.  The following is a list all all JARS used in the project:
+When you have a project setup, the next step is to ensure that all required JAR files are used.  
 
-commons-logging-1.1.jar
-ws-commons-util-1.0.2.jar
-xmlrpc-client-3.1.3.jar
-xmlrpc-common-3.1.3.jar
-ant-1.6.5.jar
-ant-antlr-1.6.5.jar
-ant-junit-1.6.5.jar
-ant-launcher-1.6.5.jar
-ant-swing-1.6.5.jar
-antlr-2.7.6.jar
-asm-attrs.jar
-c3p0-0.9.1.jar
-cglib-2.1.3.jar
-checkstyle-all.jar
-cleanimports.jar
-commons-collections-3.2.1.jar
-concurrent-1.3.2.jar
-dom4j-1.6.1.jar
-dom4j.jar
-ehcache-1.2.3.jar
-ejb3-persistence.jar
-fixtures.jar
-hibernate-annotations.jar
-hibernate-commons-annotations.jar
-hibernate-core.jar
-jaas.jar
-jacc-1_0-fr.jar
-javassist.jar
-jaxen-1.1-beta-7.jar
-jboss-cache.jar
-jboss-common.jar
-jboss-jmx.jar
-jboss-system.jar
-jgroups-2.2.8.jar
-jta.jar
-junit-4.5.jar
-log4j-1.2.11.jar
-mysql-connector-java-5.1.6-bin.jar
-oscache-2.1.jar
-proxool-0.8.3.jar
-slf4j-api.jar
-slf4j-simple-1.5.2.jar
-swarmcache-1.0rc2.jar
-syndiag2.jar
-versioncheck.jar
-xerces-2.6.2.jar
-xml-apis.jar
+The following is a list all all JARS used in the project:
+
+Apache: commons-lang-2.5.jar, coommons-codec-1.4.jar, (XML-RPC 3.1.3) xmlrpc-client-3.1.3.jar, xmlrpc-common-3.1.3.jar
+Hibernate: antlr-2.7.6.jar, commons-collections-3.2.1.jar, dom4j.jar, ejb3-persistence.jar, hibernate-annotations.jar, hibernate-commons-annotations.jar, 
+		   hibernate-core.jar, javassist.jar, jta.jar
+Jersey: jsr311-api-1.0.jar, asm-3.1.jar, jersey-bundle-1.0.3.jar
+JAX-WS/Metro: webservices-api.jar, webservices-rt.jar
+JDBC (MySQL): mysql-connector-java-5.1.7-bin.jar
+JUnit: junit-4.8.2.jar
+Logging: slf4j-api-1.5.10.jar, slf4j-simple-1.5.10.jar
+Restlet (2.0 RC4): com.sun.grizzly.jar, com.sun.grizzly.util.jar, org.restlet.ext.grizzly.jar, org.restlet.jar
+Scribe: scribe-0.6.7-SNAPSHOP.jar (or later)
+Shopster: shopster-1.0.jar
+XStream (1.3.1):  xpp3_min-1.1.4c.jar, xstream-1.3.1.jar
+
+
+
+
+
+
+
+
+
+
+
+
