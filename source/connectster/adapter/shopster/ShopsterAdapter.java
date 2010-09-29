@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 public class ShopsterAdapter
 implements IAdapter
 {
-    public enum Property { Namespace, Endpoint, WebServiceVersion, OAuthUri, AccessKey, AccessSecret, KeyPrefix, SecretPrefix, AdapterPrefix }
+    public enum Property { Namespace, Endpoint, WebServiceVersion, OAuthUri, AccessKey, AccessSecret, KeyPrefix, SecretPrefix, AdapterPrefix, PollingInterval }
 
     private static final int GET_ITEMS_PAGE_SIZE = 24;
     private static Logger log = Logger.getLogger( ShopsterAdapter.class.getName( ) );
@@ -41,6 +41,7 @@ implements IAdapter
     private String endpoint, namespace, version, oauthUri;
     private IAdapterConnection connection;
     private ShopsterMonitor monitor;
+    private Map<String,IAdapterProperty> properties;
 
     @Override
     public void initialize( IAdapterConnection connection, Map<String,IAdapterProperty> properties )
@@ -51,6 +52,7 @@ implements IAdapter
         namespace = properties.get( Property.Namespace.toString( ) ).getValue( );
         version = properties.get( Property.WebServiceVersion.toString( ) ).getValue( );
         oauthUri = properties.get( Property.OAuthUri.toString( ) ).getValue( );
+        this.properties = properties;
 
         // the key map for specific keys relating to a particular adapter, to do this first obtain all adapter prefixed keys
         keyMap = new HashMap<Long, KeyPair>( );
@@ -345,6 +347,11 @@ implements IAdapter
         }
 
         return response;
+    }
+
+    public Map<String, IAdapterProperty> getProperties( )
+    {
+        return properties;
     }
 
     private class AuthMain

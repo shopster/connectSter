@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 public class ProductMonitor
 extends Monitor
 {
-    public static int PRODUCT_MONITOR_INTERVAL = 10000;
+    public static int PRODUCT_MONITOR_INTERVAL = 30000;
     private static Logger log = Logger.getLogger( ProductMonitor.class.getName( ) );
 
     public ProductMonitor( final Map<Long, IAdapter> adapters )

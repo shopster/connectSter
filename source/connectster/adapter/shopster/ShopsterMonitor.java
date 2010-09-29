@@ -27,13 +27,14 @@ import java.util.logging.Logger;
 public class ShopsterMonitor
 {
     private static final String LAST_UPDATED_CATEGORY = "LastUpdated";
-    private static final int POLL_INTERVAL = 30000;
+    private static final int POLL_INTERVAL_DEFAULT = 180000;
     private static Logger log = Logger.getLogger( ShopsterAdapter.class.getName( ) );
 
     private ShopsterAdapter adapter;
     private ShopsterRunnable executor;
     private IAdapterConnection connection;
     private Thread thread;
+    private int pollingInterval;
 
     public ShopsterMonitor( ShopsterAdapter adapter, IAdapterConnection connection )
     {
@@ -41,6 +42,21 @@ public class ShopsterMonitor
         this.connection = connection;
         this.executor = new ShopsterRunnable( );
         this.thread = new Thread( executor );
+
+        pollingInterval = POLL_INTERVAL_DEFAULT;
+        IAdapterProperty property = adapter.getProperties( ).get( ShopsterAdapter.Property.PollingInterval.toString( ) );
+        if( property != null )
+        {
+            String propertyValue = property.getValue( );
+            try
+            {
+                pollingInterval = Integer.parseInt( propertyValue );
+            }
+            catch( NumberFormatException x )
+            {
+                log.warning( "Received " );
+            }
+        }
     }
 
     public void start( )
@@ -171,7 +187,7 @@ public class ShopsterMonitor
 
             try
             {
-                Thread.sleep( POLL_INTERVAL );
+                Thread.sleep( pollingInterval );
             }
             catch( InterruptedException x )
             {

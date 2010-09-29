@@ -63,16 +63,16 @@ public class AuthManager
         {
             synchronized( authMap )
             {
-                Set<String> keys = authMap.keySet( );
-                for( String key : keys )
+                Iterator<String> keys = authMap.keySet( ).iterator( );
+                while( keys.hasNext( ) )
                 {
-                    AuthDetails details = authMap.get( key );
+                    AuthDetails details = authMap.get( keys.next( ) );
 
                     long currentTimestamp = System.currentTimeMillis( );
                     long detailsTimestamp = details.getRequestTimestamp( );
                     if( currentTimestamp - detailsTimestamp > timeout )
                     {
-                        keys.remove( key );
+                        keys.remove( );
                         log.info( "Removing authorization request due to timeout: " + details.getStore( ) );
                     }
                 }
